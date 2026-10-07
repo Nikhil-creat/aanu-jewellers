@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AANU Jewellers | Gold & Silver Jewellery, Thorrur, Warangal</title>
+<meta name="description" content="AANU Jewellers, Thorrur. Gold 18K-24K, silver and combination jewellery for kids, ladies, men and family occasions. AI assistant, rate-locked WhatsApp orders.">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><meta name="theme-color" content="#1A1A1A"><meta property="og:title" content="AANU Jewellers, Thorrur"><meta property="og:description" content="Gold, silver and combination jewellery with live store rates, 3D view and AI assistant."><meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 2 44 18 24 46 4 18Z' fill='%23C5A059'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<script src="config.js"></script>
+<div class="tk" id="tk" aria-label="Gold and silver rates"></div>
+<header><div class="w"><a href="#top" class="lg"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6DE9A"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#8A6A2B"/></linearGradient></defs><path d="M24 3 43 18 24 45 5 18Z" fill="none" stroke="url(#lgg)" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 18h38M15 18 24 3l9 15M15 18l9 27 9-27M24 18v27" fill="none" stroke="url(#lgg)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="24" cy="10" r="1.6" fill="url(#lgg)"/></svg><span class="logo serif" style="line-height:1.1"><span class="gt">AANU</span><small>JEWELLERS &middot; THORRUR</small></span></a>
+<nav><a href="#collections">Collections</a><a href="#custom">Customize</a><a href="#calc">Calculator</a><a href="#visit">Visit</a></nav>
+<button class="ic" id="bagBtn" aria-label="Open bag">&#128717;<span id="cnt">0</span></button></div></header>
+<main id="top">
+<div class="hero"><div class="w"><div>
+<span class="tag">Gold &middot; Silver &middot; Combination</span>
+<h1>Jewellery for every <span class="gt"><i>generation</i></span></h1>
+<p>Kids, ladies, men and family occasions. Filter by karat, weight and size, ask our AI assistant, and order on WhatsApp with the day's rate locked.</p>
+<p style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap"><a href="#collections" class="btn gb">Browse Collections</a><button class="btn o" id="askBtn">Ask AI Assistant</button></p></div>
+<div class="rate"><span class="tag">Today's store rate</span>
+<div style="margin-top:10px"><span>24K Gold / g</span><b id="g24"></b></div><div><span>22K Gold / g</span><b id="g22"></b></div><div><span>20K Gold / g</span><b id="g20"></b></div><div><span>18K Gold / g</span><b id="g18"></b></div><div><span>Silver / g</span><b id="sv"></b></div><div><span>Updated</span><b id="rd"></b></div></div></div></div>
+
+<section id="collections"><div class="w">
+<span class="ey">Exquisite masterpieces</span><h2>Shop by occasion &amp; person</h2>
+<p class="mut" style="margin:0">Price = metal weight &times; today's rate + making + 3% GST. Illustrations are shown until real photos are added.</p>
+<div class="orn" id="orn"></div>
+<div class="tabs" id="tabs"></div>
+<div class="fl" id="fl"></div>
+<p class="mut" id="rc" style="font-size:13px"></p>
+<div class="g3" id="grid"></div></div></section>
+
+<section id="custom" class="alt"><div class="w" style="max-width:720px"><span class="ey">Custom order atelier</span><h2>Customize Mawa</h2>
+<p class="mut">Describe your design. It goes to our craftsmen on WhatsApp; send reference photos there.</p>
+<form id="cf" class="card" style="padding:20px"><div><label for="cn">Your name</label><input id="cn" required autocomplete="name"></div>
+<div class="two"><div><label for="cm">Metal</label><select id="cm"><option>24K Gold</option><option selected>22K Gold</option><option>20K Gold</option><option>18K Gold</option><option>92.5 Silver</option><option>Gold + Silver combination</option></select></div>
+<div><label for="cg">For</label><select id="cg"><option>Kids</option><option>Ladies</option><option>Men</option><option>Family / Occasion</option></select></div></div>
+<div><label for="cd">Design details</label><textarea id="cd" rows="4" required placeholder="Weight, size, stones, pattern..."></textarea></div>
+<button class="btn gb" type="submit" style="justify-content:center">Send on WhatsApp</button></form></div></section>
+<section id="calc"><div class="w" style="max-width:640px"><span class="ey">Quick tool</span><h2>Gold &amp; silver value calculator</h2>
+<p class="mut">Estimate price at today's store rate: weight &times; rate + making + GST.</p>
+<div class="card" style="padding:20px;display:grid;gap:12px"><div class="two"><div><label for="qm">Metal</label><select id="qm"><option value="24">24K Gold</option><option value="22" selected>22K Gold</option><option value="20">20K Gold</option><option value="18">18K Gold</option><option value="s">92.5 Silver</option></select></div>
+<div><label for="qg">Weight (grams)</label><input id="qg" type="number" inputmode="decimal" min="0" step="0.1" placeholder="e.g. 10"></div></div>
+<button class="btn gb" id="qb" style="justify-content:center">Calculate</button><p id="qo" style="margin:0;font-size:14px"></p></div></div></section>
+</main>
+<footer id="visit"><div class="w"><div class="g3">
+<div><h3 class="serif">AANU Jewellers</h3><p>Hallmarked gold, sterling silver and bespoke ornaments in Thorrur, Warangal.</p></div>
+<div><h3 class="serif">Visit us</h3><p>Kantayapalem Road, Thorrur, Warangal, Telangana 506163<br><a href="tel:+916300556301" style="color:#E6C57A">+91 63005 56301</a><br><a href="mailto:sriramojunikhil66@gmail.com">sriramojunikhil66@gmail.com</a></p>
+<p><a class="btn o" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=AANU+Jewellers+Kantayapalem+Road+Thorrur">Open in Google Maps</a></p></div>
+<div><h3 class="serif">Prices</h3><p>Estimates from the store rate shown. The final bill is confirmed by the store.</p></div></div>
+<div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span>&copy; 2026 AANU Jewellers</span><span style="color:#E6C57A">Website by Nikhil Chary Sriramoju</span></div></div></footer>
+
+<a class="wa" id="wab" target="_blank" rel="noopener" aria-label="WhatsApp">&#128172;</a>
+<button class="bot gb" id="botBtn" aria-label="AI assistant">AI</button>
+<div id="cp"><div id="ch"><span>AANU AI Assistant</span><span><button id="kb" title="Groq key">&#9881;</button><button id="cx">&times;</button></span></div>
+<div id="cl"></div><div id="cc"></div>
+<div id="ck"><label for="gk">Optional: your free Groq API key (console.groq.com). Stays in this browser only.</label><input id="gk" type="password" placeholder="gsk_..." autocomplete="off"></div>
+<form id="cf2"><input id="cq" placeholder="Ask anything..." autocomplete="off"><button class="btn gb" type="submit">Send</button></form></div>
+<div id="dr"><div id="dp"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><h2 style="margin:0;font-size:24px">Your bag</h2><button class="ic" id="xb" aria-label="Close">&times;</button></div>
+<div id="ci"></div><div style="padding-top:12px"><p id="lk" class="mut" style="font-size:11px;margin:0 0 8px"></p><div style="display:flex;justify-content:space-between;font-weight:700;margin-bottom:10px"><span>Estimated total</span><span id="tt" class="serif"></span></div><button class="btn gb" id="co" style="width:100%;justify-content:center">Confirm on WhatsApp</button></div></div></div>
+<div id="pm"><div id="pc"></div></div>
+<div id="ts"></div>
+<script src="app.js"></script>
+</body>
+</html>
