@@ -1,53 +1,32 @@
-# AANU Jewellers: website + catalogue tools
+# AANU Jewellers: fullstack website
 
-## 1. Add your designs (1000+ per segment is fine)
-Keep 4K originals on your computer in `originals/` (this folder is NOT uploaded):
+Front-end (repo root) + Node/Express API (`server/`) + Postgres. Works on Render, Vercel, Netlify or Docker.
 
-    originals/<segment>/<type>/<Style>/<Name>_<spec>.jpg
-    segment: kids ladies men family marriage festival events daily
-    type:    ring bangle chain necklace earrings anklet pendant set
-    Style:   Temple Antique Kundan Modern Minimal Bridal Traditional Casual
-    spec:    _22K_8.5g   (gold, karat 18/20/22/24 + grams)
-             _925_30g    (silver)
-             _20K_15g_925_25g  (gold + silver combination)
-    extra tags: add +marriage+festival, e.g. Lakshmi-Haram_22K_65g+marriage.jpg
-    exact 3D scan (optional): models/<same file name>.glb
+## What it does
+- Catalogue from the database (admin can hide/delete/import), paging and search for thousands of designs, 3D viewer, AI assistant.
+- **Orders are priced on the server at the moment the customer taps Confirm** (rate lock). Each order stores the rates and the IST time, shows in `/admin.html`, and opens WhatsApp with the same details.
+- Gold/silver rates: set by you in `/admin.html`, or auto (market spot x USD/INR, calibrated to your board).
+- **Groq key stays on the server** (`GROQ_API_KEY`). Customers never see it.
+- PWA, SEO tags, custom-order requests saved, admin login (HMAC token), rate limiting.
 
-Then run once (any time you add photos):
+## Set up (same for every host)
+1. Free Postgres: neon.tech (or supabase.com). Copy the connection string = `DATABASE_URL`.
+2. Env vars: copy `.env.example`. Required: `DATABASE_URL`, `ADMIN_PASSWORD`, `SESSION_SECRET`. Optional: `GROQ_API_KEY`, `CRON_SECRET`.
+3. Deploy (below), open `https://<your-site>/admin.html`, log in, Products > import `data/sample_products.json` (or your own `products.json`).
+4. Rates: edit and Save. For auto: type today's 24K and silver board rates, Calibrate, tick Auto-update, Save.
 
-    pip install pillow
-    python tools/build_catalog.py
+## Deploy
+- **Render**: New > Blueprint (uses `render.yaml`) or Web Service: build `npm install`, start `node server/index.js`. Add env vars. Free plan sleeps when idle.
+- **Vercel**: Import the GitHub repo. Framework: Other. No build command. Add env vars. (`vercel.json` already routes /api.)
+- **Netlify**: Import repo; publish `.` (repo root), functions `netlify/functions` (`netlify.toml` sets it). Add env vars.
+- **Docker**: `docker compose up --build` then http://localhost:3000 (edit passwords in docker-compose.yml first).
+- Auto rates on serverless hosts: add a free cron (cron-job.org) hitting `https://<site>/api/cron/rates?key=<CRON_SECRET>` every 30 min. The first visitor after 30 min also triggers a refresh.
 
-It creates web-ready WebP in `assets/img/t` (480px thumbs), `m` (1280px), `l` (2560px, the zoom / "Full resolution" image) and writes `data/products.json`. The site loads it automatically, with paging and search for thousands of designs.
+## Photos and bulk designs
+Put 4K originals in `originals/<segment>/<type>/<Style>/Name_22K_8.5g.jpg`, run `pip install pillow` and `python tools/build_catalog.py` (writes WebP to `assets/img` and `data/products.json`), commit, then import `products.json` in the admin page. Or fill `catalog.csv` (see `catalog_template.csv`) and run `python tools/import_csv.py` first. For thousands of images use a CDN and set `CFG.imgBase` in `config.js`.
 
-## 2. Daily rates
-Edit `rates.json` (`gold22`, `silver`, `updated`). The site re-reads it every 60 seconds and the scrolling ticker updates. Making %, GST, phone are in `config.js`.
+## Before going live
+Change ADMIN_PASSWORD/SESSION_SECRET, set real making % and GST in admin, check hallmark/price-protection wording with your accountant, and add your own product photos.
 
-## 3. Upload to GitHub and publish with GitHub Pages
-1. Create a free account at github.com, then New repository: name `aanu-jewellers`, Public, no README.
-2. Upload the files:
-   - Small start (under ~100 files): on the repo page tap "uploading an existing file", drag the extracted folder CONTENTS (index.html at the top level), Commit.
-   - With your photos (thousands of files) use git, in the extracted folder:
-
-         git init
-         git add .
-         git commit -m "AANU site"
-         git branch -M main
-         git remote add origin https://github.com/<your-username>/aanu-jewellers.git
-         git push -u origin main
-
-     (Login with a Personal Access Token as password: GitHub > Settings > Developer settings > Tokens. For huge catalogues push in batches: add one segment folder, commit, push, repeat.)
-3. Repo > Settings > Pages > Source: "Deploy from a branch", Branch `main`, folder `/ (root)`, Save.
-4. After 1 to 3 minutes your site is live at `https://<your-username>.github.io/aanu-jewellers/`. Later updates: add files, `git add . && git commit -m update && git push`.
-5. Custom domain (optional): Settings > Pages > Custom domain, then add the DNS records GitHub shows.
-
-## Limits to plan for
-- GitHub Pages sites should stay under 1 GB; one file max 100 MB. About 0.6 MB per design (3 sizes) means roughly 1500 designs fit. For more, host `assets/img` on Cloudflare R2 / Cloudinary / Bunny and set `CFG.imgBase` in `config.js` to that URL (ending with /).
-- Never upload `originals/` (4K raw files); it is already in `.gitignore`.
-- AI chatbot: open the chat, tap the gear, paste your free Groq key (console.groq.com). It is stored only in that visitor's browser. For a public shop, put the key behind a small proxy server instead.
-- 3D: the viewer needs internet (three.js from a CDN). It shows a parametric model per design type; add `.glb` scans for exact pieces.
-
-## Helper scripts (Termux friendly)
-- `sh tools/update_rates.sh 7250 118` updates rates.json (22K gold, silver) and pushes.
-- `sh tools/deploy.sh "new designs"` rebuilds the catalogue from originals/ and pushes.
-- The site is installable as an app (PWA) from the browser menu: Add to Home screen.
+## Same repo, GitHub Pages still works
+GitHub Pages keeps serving the static version (no database): products come from `data/products.json` or the built-in sample, orders go straight to WhatsApp. Vercel/Render/Netlify run the full version from this same repo.

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: aanu-jewellers
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server/index.js
+    healthCheckPath: /api/rates
+    envVars:
+      - { key: DATABASE_URL, sync: false }
+      - { key: ADMIN_PASSWORD, sync: false }
+      - { key: SESSION_SECRET, generateValue: true }
+      - { key: GROQ_API_KEY, sync: false }
+      - { key: CRON_SECRET, generateValue: true }

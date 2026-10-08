@@ -1,3 +1,4 @@
+var ON=0;
 
 /* name, shape, tags, karat(0=none), gold g, silver g, sizes */
 var D=[
@@ -40,15 +41,15 @@ var D=[
 ["Temple Lakshmi Pendant","pendant","ladies,festival",22,6,0,"16 in,18 in","Temple"],
 ["Silver Gifting Coin Set","set","family,festival",0,0,100,"Free","Traditional"]];
 function main(){
-var P=D.map(function(r,i){return{id:i+1,im:r[8]||"",m:r[9]||"",n:r[0],y:r[1],t:r[2].split(","),k:r[3],g:r[4],s:r[5],z:r[6].split(","),d:r[7],w:Math.round((r[4]+r[5])*10)/10}});
+var P=D.map(function(r,i){return{id:r[10]||i+1,im:r[8]||"",m:r[9]||"",n:r[0],y:r[1],t:r[2].split(","),k:r[3],g:r[4],s:r[5],z:r[6].split(","),d:r[7],w:Math.round((r[4]+r[5])*10)/10}});
 var STY=[];P.forEach(function(p){if(STY.indexOf(p.d)<0)STY.push(p.d)});STY.sort();
 var TAB=[["all","All"],["kids","Kids"],["ladies","Ladies"],["men","Men"],["family","Family"],["marriage","Marriage"],["festival","Festivals"],["events","Functions & Events"],["daily","Daily Wear"]];
 var SH={ring:'<circle cx="50" cy="62" r="22"/><path class="a" d="M42 38l8-14 8 14-8 8z"/>',bangle:'<ellipse cx="50" cy="55" rx="36" ry="30"/><ellipse class="a" cx="50" cy="55" rx="27" ry="21"/>',chain:'<path d="M10 22Q50 98 90 22" stroke-dasharray="0.1 8" stroke-width="7"/>',necklace:'<path d="M14 22Q50 82 86 22"/><circle class="a" cx="50" cy="68" r="8"/>',earrings:'<path d="M30 14v14M70 14v14"/><path d="M20 82Q20 48 30 32Q40 48 40 82Z"/><path class="a" d="M60 82Q60 48 70 32Q80 48 80 82Z"/>',anklet:'<path d="M8 52q10-22 21 0t21 0 21 0 21 0"/><circle class="a" cx="29" cy="60" r="4"/><circle class="a" cx="71" cy="60" r="4"/>',pendant:'<path d="M16 14Q50 58 84 14"/><path class="a" d="M50 52c-13 14-13 30 0 36 13-6 13-22 0-36z"/>',set:'<path d="M10 14Q50 92 90 14"/><circle class="a" cx="50" cy="68" r="9"/><circle cx="22" cy="84" r="5"/><circle cx="78" cy="84" r="5"/>'};
 var $=function(i){return document.getElementById(i)};
 var F={tag:"all",metal:"",kt:"",wt:"",sz:"",pr:"",ty:"",so:""};
 var cart=[];
-var BASE=(function(){var o=null;try{o=JSON.parse(localStorage.getItem("aanu_pv"))}catch(e){}return o||{g:CFG.gold22,s:CFG.silver}})();
-function gr(k){return Math.round(CFG.gold22*k/22)}
+var BASE=(function(){var o=null;try{o=JSON.parse(localStorage.getItem("aanu_pv2"))}catch(e){}return o||{g:CFG.gold22,s:CFG.silver}})();
+function gr(k){return CFG["gold"+k]||Math.round(CFG.gold22*k/22)}
 function price(p){var g=p.g*(p.k?gr(p.k):0),s=p.s*CFG.silver;return Math.round((g*(1+CFG.makingGold)+s*(1+CFG.makingSilver))*(1+CFG.gst))}
 function inr(n){return "\u20B9 "+Math.round(n).toLocaleString("en-IN")}
 function mtl(p){return p.k&&p.s?p.k+"K Gold + Silver":p.k?p.k+"K Gold":"92.5 Silver"}
@@ -102,15 +103,23 @@ function draw(){var c=$("ci"),tot=0;c.innerHTML=cart.length?"":'<p class="mut" s
  cart.forEach(function(x,i){var p=pOf(x.id),l=price(p)*x.q;tot+=l;var d=document.createElement("div");d.className="it";
   d.innerHTML='<div><b>'+p.n+'</b><br><small class="mut">'+mtl(p)+' &middot; '+p.w+' g'+(x.z!=="Free"?' &middot; '+x.z:'')+'</small></div><div style="text-align:right"><b>'+inr(l)+'</b><div class="q"><button data-a="-">&minus;</button> '+x.q+' <button data-a="+">+</button></div></div>';
   d.querySelectorAll("button").forEach(function(b){b.onclick=function(){x.q+=b.dataset.a==="+"?1:-1;if(x.q<1)cart.splice(i,1);save();badge();draw()}});c.appendChild(d)});
- $("tt").textContent=inr(tot);$("lk").textContent="Prices follow the live store rate until you tap Confirm. At that exact time the rates are locked and billed."}
+ $("cu").style.display=ON?"grid":"none";$("tt").textContent=inr(tot);$("lk").textContent="Prices follow the live store rate until you tap Confirm. At that exact time the rates are locked and billed."}
 function wa(m){window.open("https://wa.me/"+CFG.phone+"?text="+encodeURIComponent(m),"_blank")}
 $("bagBtn").onclick=function(){draw();$("dr").className="open"};$("xb").onclick=function(){$("dr").className=""};$("dr").onclick=function(e){if(e.target===$("dr"))$("dr").className=""};
-$("co").onclick=function(){if(!cart.length)return toast("Your bag is empty");
+function legacy(){
  var n=new Date(),t=ist(),ref="AANU-"+n.toISOString().slice(2,10).replace(/-/g,"")+"-"+Math.random().toString(36).slice(2,6).toUpperCase(),tot=0;
  var m="Hello AANU Jewellers,\nORDER "+ref+"\nPlaced: "+t+" (IST)\n\n";
  cart.forEach(function(x,i){var p=pOf(x.id),l=price(p)*x.q;tot+=l;m+=(i+1)+". "+p.n+" ("+mtl(p)+", "+p.w+" g"+(x.z!=="Free"?", "+x.z:"")+") x"+x.q+" = "+inr(l)+"\n"});
  m+="\nRATES LOCKED AT "+t+":\n24K "+inr(gr(24))+"/g, 22K "+inr(CFG.gold22)+"/g, 20K "+inr(gr(20))+"/g, 18K "+inr(gr(18))+"/g, Silver "+inr(CFG.silver)+"/g\nEstimated total: "+inr(tot)+"\nPlease bill at the rates above and confirm availability.";
- wa(m);toast("Rates locked at "+t.split(", ").pop())};
+ wa(m);toast("Rates locked at "+t.split(", ").pop())}
+$("co").onclick=function(){if(!cart.length)return toast("Your bag is empty");if(!ON)return legacy();
+ var nm=$("on").value.trim(),ph=$("op").value.replace(/\D/g,"");if(!nm||ph.length<10)return toast("Enter your name and 10-digit phone");
+ fetch((CFG.api||"")+"/api/orders",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:nm,phone:ph,items:cart.map(function(x){return{id:x.id,qty:x.q,size:x.z}})})}).then(function(r){return r.json()}).then(function(o){
+  if(!o.ref)return toast(o.error||"Order failed, please try again");
+  var m="Hello AANU Jewellers,\nORDER "+o.ref+"\nPlaced: "+o.placedAt+" (IST)\nName: "+nm+"\nPhone: "+ph+"\n\n";
+  o.lines.forEach(function(l,i){m+=(i+1)+". "+l.name+(l.size&&l.size!=="Free"?" ("+l.size+")":"")+" x"+l.qty+" = "+inr(l.unit*l.qty)+"\n"});
+  var Q=o.rates;m+="\nRATES LOCKED AT "+o.placedAt+":\n24K "+inr(Q.gold24)+"/g, 22K "+inr(Q.gold22)+"/g, 20K "+inr(Q.gold20)+"/g, 18K "+inr(Q.gold18)+"/g, Silver "+inr(Q.silver)+"/g\nTotal: "+inr(o.total)+" (incl. making + GST)\nPlease confirm availability and final bill.";
+  wa(m);cart=[];save();badge();draw();$("dr").className="";toast("Order "+o.ref+" saved")}).catch(function(){toast("Network error, please try again")})};
 var TI={ring:"Measure finger circumference at the end of the day when fingers are largest. Ask the store about resizing.",bangle:"Bangle size is the inner diameter in inches: 2.2 small, 2.4 medium, 2.6 large, 2.8 extra large. Measure across your closed knuckles.",chain:"Length guide: 16 in sits at the collarbone, 18 in is standard for women, 20 to 24 in suits men.",necklace:"Sits on the chest; pairs well with matching earrings.",earrings:"Check the fastening type with the store before ordering if you have sensitive ears.",anklet:"Usually worn as a pair; measure ankle circumference and add about 1 cm for comfort.",pendant:"Sold without a chain unless stated; pair with any chain from our collection.",set:"A complete matching set; the weight shown is the total."};
 var SI={Temple:"Inspired by South Indian temple art with deity, lotus and peacock motifs. A classic for weddings and festivals.",Antique:"A matte, aged finish with an heirloom feel that hides daily wear well.",Kundan:"A rich, stone-studded look made for brides and grand functions.",Modern:"Clean geometry that suits contemporary outfits.",Minimal:"Light and understated, easy to wear every day.",Bridal:"A heavy statement design for weddings and engagements.",Traditional:"Time-honoured patterns that carry across generations.",Casual:"Lightweight and comfortable for everyday use."};
 var KI={24:"99.9% pure gold. Very soft, best for coins and gifting rather than daily wear.",22:"91.6% gold. The traditional standard for jewellery, balancing purity and strength.",20:"83.3% gold. Stronger, suits intricate and stone-set designs.",18:"75% gold. Most durable, ideal for daily wear and modern designs."};
@@ -157,7 +166,7 @@ function view3d(p){load3d(function(){
  (function tick(){if(!document.body.contains(el)||$("pm").className!=="open"){R.dispose();return}if(auto)ry+=.008;G.rotation.set(rx,ry,0);cam.position.z+=(z-cam.position.z)*.1;R.render(sc,cam);requestAnimationFrame(tick)})()})}
 var OL=[["ring","Rings"],["bangle","Bangles & Kadas"],["chain","Chains"],["necklace","Necklaces"],["earrings","Earrings"],["anklet","Anklets"],["pendant","Pendants"],["set","Sets"]];
 function orn(){$("orn").innerHTML="";OL.forEach(function(o){var b=document.createElement("button");b.className=F.ty===o[0]?"on":"";b.innerHTML='<svg viewBox="0 0 100 100">'+SH[o[0]]+'</svg>'+o[1]+'<br><small>'+P.filter(function(p){return p.y===o[0]}).length+' designs</small>';b.onclick=function(){F.ty=F.ty===o[0]?"":o[0];sync();grid()};$("orn").appendChild(b)})}
-$("cf").onsubmit=function(e){e.preventDefault();wa("Hello AANU Jewellers,\n*CUSTOM ORDER (Customize Mawa)*\nName: "+$("cn").value+"\nMetal: "+$("cm").value+"\nFor: "+$("cg").value+"\nDetails: "+$("cd").value+"\n\nPlease share a quotation at today's rate.");toast("Opening WhatsApp...");this.reset()};
+$("cf").onsubmit=function(e){e.preventDefault();if(ON)fetch((CFG.api||"")+"/api/custom",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name:$("cn").value,metal:$("cm").value,whom:$("cg").value,details:$("cd").value})}).catch(function(){});wa("Hello AANU Jewellers,\n*CUSTOM ORDER (Customize Mawa)*\nName: "+$("cn").value+"\nMetal: "+$("cm").value+"\nFor: "+$("cg").value+"\nDetails: "+$("cd").value+"\n\nPlease share a quotation at today's rate.");toast("Opening WhatsApp...");this.reset()};
 
 /* ===== AI assistant: local RAG + agent tools + optional Groq ===== */
 var KB=[
@@ -206,10 +215,10 @@ function runTool(n,a){
  if(n==="ring_size")return"About US size "+(Math.round((6+(a.mm-51.8)/2.55)*2)/2)+" (confirm in store)";
  if(n==="filter_products"){F={tag:a.tag||"all",metal:a.metal||"",kt:a.karat?String(a.karat):"",wt:"",sz:"",pr:"",ty:a.type||"",st:a.style||"",so:"",maxw:a.max_weight_g||0,maxp:a.max_price_inr||0};sync();grid();SC=1;var r=list();return r.length+" matches. "+r.slice(0,5).map(function(p){return p.n+" ("+mtl(p)+", "+p.w+" g, "+inr(price(p))+")"}).join("; ")}
  return"unknown tool"}
-async function groq(q){var k=ls("g","aanu_gk");if(!k)return null;try{
+async function groq(q){var k=ls("g","aanu_gk");if(!k&&!ON)return null;try{
  var docs=retrieve(q,4).map(function(d){return d[1]}).join("\n");
  var ms=[{role:"system",content:"You are the AI assistant of AANU Jewellers, Thorrur, Warangal. Use tools to filter the shop, fetch rates or compute ring size. Answer from tools and this context only; be brief and friendly, in the user's language style (English or Telugu-English). Never invent prices or policies; if unsure, suggest WhatsApp +91 63005 56301. Orders are billed at the rate at the exact time the customer taps Confirm on WhatsApp.\nContext:\n"+docs}].concat(H.slice(-6),[{role:"user",content:q}]);
- for(var i=0;i<3;i++){var r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+k},body:JSON.stringify({model:CFG.groqModel,temperature:.3,max_tokens:400,messages:ms,tools:TL,tool_choice:"auto"})});var j=await r.json();var m=j.choices[0].message;
+ for(var i=0;i<3;i++){var r=await fetch(ON?(CFG.api||"")+"/api/groq":"https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:ON?{"Content-Type":"application/json"}:{"Content-Type":"application/json",Authorization:"Bearer "+k},body:JSON.stringify(ON?{messages:ms,tools:TL}:{model:CFG.groqModel,temperature:.3,max_tokens:400,messages:ms,tools:TL,tool_choice:"auto"})});var j=await r.json();var m=j.choices[0].message;
   if(m.tool_calls&&m.tool_calls.length){ms.push(m);m.tool_calls.forEach(function(c){var a={};try{a=JSON.parse(c.function.arguments||"{}")}catch(e){}ms.push({role:"tool",tool_call_id:c.id,content:runTool(c.function.name,a)})});continue}
   return m.content}return null}catch(e){return null}}
 async function send(q){
@@ -231,15 +240,17 @@ function showRates(){
  var h=[24,22,20,18].map(function(k){return'<span><b>'+k+'K Gold</b> '+inr(gr(k))+'/g'+ar(d*k/22)+'</span>'}).join("")+'<span><b>Silver</b> '+inr(CFG.silver)+'/g'+ar(ds)+'</span><span>Store rates as of '+CFG.rateDate+' (changes vs your last visit)</span>';
  $("tk").innerHTML='<div class="tki">'+h+h+'</div>';
  [["g24",gr(24)],["g22",CFG.gold22],["g20",gr(20)],["g18",gr(18)],["sv",CFG.silver]].forEach(function(x){$(x[0]).textContent=inr(x[1])});$("rd").textContent=CFG.rateDate;
- ls("s","aanu_pv",JSON.stringify({g:CFG.gold22,s:CFG.silver}))}
-function loadRates(){try{fetch("rates.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.gold22)return;var ch=+j.gold22!==CFG.gold22||+j.silver!==CFG.silver||(j.updated&&j.updated!==CFG.rateDate);CFG.gold22=+j.gold22;CFG.silver=+j.silver||CFG.silver;if(j.updated)CFG.rateDate=j.updated;if(ch){showRates();grid();if($("dr").className)draw()}}).catch(function(){})}catch(e){}}
+ ls("s","aanu_pv2",JSON.stringify({g:CFG.gold22,s:CFG.silver}))}
+function applyRates(j){if(!j||!(j.gold22||j.gold24))return false;var ch=false;["gold24","gold22","gold20","gold18","silver"].forEach(function(k){if(j[k]&&+j[k]!==CFG[k]){CFG[k]=+j[k];ch=true}});["makingGold","makingSilver","gst"].forEach(function(k){if(j[k]!=null&&+j[k]!==CFG[k]){CFG[k]=+j[k];ch=true}});if(j.updated&&j.updated!==CFG.rateDate){CFG.rateDate=j.updated;ch=true}return ch}
+function loadRates(){var u=[(CFG.api||"")+"/api/rates",CFG.ratesUrl,"rates.json"];(function t(i){if(i>=u.length)return;try{fetch(u[i]+(i?"":"?t="+Date.now()),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j)return t(i+1);if(applyRates(j)){showRates();grid();if($("dr").className)draw()}}).catch(function(){t(i+1)})}catch(e){t(i+1)}})(0)}
 showRates();loadRates();setInterval(loadRates,60000);
 $("wab").href="https://wa.me/"+CFG.phone+"?text="+encodeURIComponent("Hello AANU Jewellers, I would like to enquire about your jewellery.");
 try{var v=JSON.parse(ls("g","aanu_cart3")||"[]");if(Array.isArray(v))cart=v.filter(function(x){return pOf(x.id)&&x.q>0})}catch(e){}
 filters();tabs();orn();grid();badge();
 }
-fetch("data/products.json").then(function(r){return r.ok?r.json():null}).then(function(j){if(j&&j.length)D=j}).catch(function(){}).then(main);
-(function(){function rt(v){return v==="s"?CFG.silver:Math.round(CFG.gold22*v/22)}
+function jf(u){return fetch(u,{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).catch(function(){return null})}
+jf((CFG.api||"")+"/api/products").then(function(j){if(Array.isArray(j)&&j.length){D=j;ON=1;return}return jf("data/products.json").then(function(k){if(k&&k.length)D=k})}).then(main);
+(function(){function rt(v){return v==="s"?CFG.silver:(CFG["gold"+v]||Math.round(CFG.gold22*v/22))}
 function f(n){return"\u20B9 "+Math.round(n).toLocaleString("en-IN")}
 function go(){var v=document.getElementById("qm").value,g=+document.getElementById("qg").value,o=document.getElementById("qo");if(!g||g<=0){o.textContent="Enter the weight in grams.";return}
 var r=rt(v),b=g*r,mk=b*(v==="s"?CFG.makingSilver:CFG.makingGold),gs=(b+mk)*CFG.gst;

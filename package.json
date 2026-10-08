@@ -1,0 +1,2 @@
+{ "name": "aanu-jewellers", "version": "1.0.0", "private": true, "scripts": { "start": "node server/index.js", "seed": "node server/seed.js data/sample_products.json" },
+  "engines": { "node": ">=18" }, "dependencies": { "express": "^4.19.2", "pg": "^8.11.5", "serverless-http": "^3.2.0" } }
