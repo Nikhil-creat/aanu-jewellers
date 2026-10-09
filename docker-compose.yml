@@ -3,14 +3,18 @@ services:
     image: postgres:16-alpine
     environment: { POSTGRES_PASSWORD: aanu, POSTGRES_DB: aanu }
     volumes: [dbdata:/var/lib/postgresql/data]
+  ml:
+    build: { context: ., dockerfile: ml/Dockerfile }
+    volumes: ["./assets/img/t:/data/t:ro"]
   app:
     build: .
     ports: ["3000:3000"]
-    depends_on: [db]
+    depends_on: [db, ml]
     environment:
       DATABASE_URL: postgres://postgres:aanu@db:5432/aanu
       DATABASE_SSL: "false"
       ADMIN_PASSWORD: change-me-now
       SESSION_SECRET: change-me-too
       GROQ_API_KEY: ""
+      ML_URL: http://ml:8000
 volumes: { dbdata: {} }

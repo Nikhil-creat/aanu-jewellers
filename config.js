@@ -5,3 +5,6 @@ var CFG={phone:"916300556301",rateDate:"07 Oct 2026",gold24:14359,gold22:13675,g
 
 CFG.imgBase="assets/img/"; /* point to a CDN URL (ending with /) if images are hosted elsewhere */
 CFG.api=""; /* "" = same server. If the site is on another host than the API, put the API origin here, e.g. "https://aanu-api.onrender.com" */
+CFG.store={hours:"",delivery:"",returns:"",exchange:"",payments:"",gstin:""}; /* fill in what applies to your shop; the assistant answers from these. Empty = it tells customers to confirm on WhatsApp */
+CFG.place={name:"AANU Jewellers",street:"",landmark:"",plus:"HMJ6+WJQ",town:"Thorrur",district:"Mahabubabad",state:"Telangana",pin:"506163",lat:17.582343,lng:79.661595};
+/* street = shop/door number and road (add it here); landmark e.g. "Near ..."; coordinates are the exact Google Maps pin */

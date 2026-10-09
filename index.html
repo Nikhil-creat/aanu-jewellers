@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AANU Jewellers | Gold & Silver Jewellery, Thorrur, Warangal</title>
+<title>AANU Jewellers | Gold & Silver Jewellery, Thorrur, Mahabubabad</title>
 <meta name="description" content="AANU Jewellers, Thorrur. Gold 18K-24K, silver and combination jewellery for kids, ladies, men and family occasions. AI assistant, rate-locked WhatsApp orders.">
-<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><meta name="theme-color" content="#1A1A1A"><meta property="og:title" content="AANU Jewellers, Thorrur"><meta property="og:description" content="Gold, silver and combination jewellery with live store rates, 3D view and AI assistant."><meta property="og:type" content="website">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"JewelryStore","name":"AANU Jewellers","telephone":"+916300556301","url":"https://nikhil-creat.github.io/aanu-jewellers/","address":{"@type":"PostalAddress","addressLocality":"Thorrur","addressRegion":"Telangana","postalCode":"506163","addressCountry":"IN"},"geo":{"@type":"GeoCoordinates","latitude":17.582343,"longitude":79.661595},"hasMap":"https://www.google.com/maps/search/?api=1&query=17.582343,79.661595"}</script><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/icon-180.png"><meta name="theme-color" content="#1A1A1A"><meta property="og:title" content="AANU Jewellers, Thorrur"><meta property="og:description" content="Gold, silver and combination jewellery with live store rates, 3D view and AI assistant."><meta property="og:type" content="website">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath d='M24 2 44 18 24 46 4 18Z' fill='%23C5A059'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -14,8 +14,8 @@
 <script src="config.js"></script>
 <div class="tk" id="tk" aria-label="Gold and silver rates"></div>
 <header><div class="w"><a href="#top" class="lg"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="lgg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F6DE9A"/><stop offset=".5" stop-color="#C5A059"/><stop offset="1" stop-color="#8A6A2B"/></linearGradient></defs><path d="M24 3 43 18 24 45 5 18Z" fill="none" stroke="url(#lgg)" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 18h38M15 18 24 3l9 15M15 18l9 27 9-27M24 18v27" fill="none" stroke="url(#lgg)" stroke-width="1.6" stroke-linejoin="round"/><circle cx="24" cy="10" r="1.6" fill="url(#lgg)"/></svg><span class="logo serif" style="line-height:1.1"><span class="gt">AANU</span><small>JEWELLERS &middot; THORRUR</small></span></a>
-<nav><a href="#collections">Collections</a><a href="#custom">Customize</a><a href="#calc">Calculator</a><a href="#visit">Visit</a></nav>
-<button class="ic" id="bagBtn" aria-label="Open bag">&#128717;<span id="cnt">0</span></button></div></header>
+<nav><a href="#collections">Collections</a><a href="#library">Design library</a><a href="#custom">Customize</a><a href="#calc">Calculator</a><a href="#visit">Visit</a></nav>
+<span style="display:flex;gap:8px"><button class="ic" id="thm" aria-label="Light or dark">&#9680;</button><button class="ic" id="bagBtn" aria-label="Open bag">&#128717;<span id="cnt">0</span></button></span></div></header>
 <main id="top">
 <div class="hero"><div class="w"><div>
 <span class="tag">Gold &middot; Silver &middot; Combination</span>
@@ -25,15 +25,20 @@
 <div class="rate"><span class="tag">Today's store rate</span>
 <div style="margin-top:10px"><span>24K Gold / g</span><b id="g24"></b></div><div><span>22K Gold / g</span><b id="g22"></b></div><div><span>20K Gold / g</span><b id="g20"></b></div><div><span>18K Gold / g</span><b id="g18"></b></div><div><span>Silver / g</span><b id="sv"></b></div><div><span>Updated</span><b id="rd"></b></div></div></div></div>
 
+<div class="alt" style="padding:16px 0"><div class="w trust"><span>&#128274; Rate locked at order time</span><span>&#128142; 3D view of every design</span><span>&#9998; Custom designs on WhatsApp</span><span>&#129302; AI assistant for every question</span></div></div>
 <section id="collections"><div class="w">
 <span class="ey">Exquisite masterpieces</span><h2>Shop by occasion &amp; person</h2>
 <p class="mut" style="margin:0">Price = metal weight &times; today's rate + making + 3% GST. Illustrations are shown until real photos are added.</p>
 <div class="orn" id="orn"></div>
 <div class="tabs" id="tabs"></div>
 <div class="fl" id="fl"></div>
-<p class="mut" id="rc" style="font-size:13px"></p>
+<p class="mut" id="rc" style="font-size:13px;margin-bottom:6px"></p><button class="btn o" id="cmpb" style="display:none;margin-bottom:10px"></button>
 <div class="g3" id="grid"></div></div></section>
 
+<section id="library"><div class="w"><span class="ey">Design library</span><h2>Bangle design trays</h2>
+<p class="mut">Real photos of our bangle sample trays. Tap the photo to open it in full size, note the design number and ask us on WhatsApp.</p>
+<a href="assets/img/l/tray-bangle-3.webp" target="_blank" rel="noopener"><img src="assets/img/m/tray-bangle-3.webp" srcset="assets/img/m/tray-bangle-3.webp 1280w, assets/img/l/tray-bangle-3.webp 2290w" sizes="(min-width:1000px) 1000px, 100vw" loading="lazy" alt="Gold bangle design tray with 90 numbered designs" style="width:100%;border-radius:18px;border:1px solid var(--line)"></a>
+<form id="df" class="card" style="padding:16px;margin-top:14px;grid-template-columns:1fr auto;align-items:end"><div><label for="dn">Design number (1 to 90)</label><input id="dn" type="number" min="1" max="90" inputmode="numeric" required></div><button class="btn gb" type="submit">Ask on WhatsApp</button></form></div></section>
 <section id="custom" class="alt"><div class="w" style="max-width:720px"><span class="ey">Custom order atelier</span><h2>Customize Mawa</h2>
 <p class="mut">Describe your design. It goes to our craftsmen on WhatsApp; send reference photos there.</p>
 <form id="cf" class="card" style="padding:20px"><div><label for="cn">Your name</label><input id="cn" required autocomplete="name"></div>
@@ -48,9 +53,9 @@
 <button class="btn gb" id="qb" style="justify-content:center">Calculate</button><p id="qo" style="margin:0;font-size:14px"></p></div></div></section>
 </main>
 <footer id="visit"><div class="w"><div class="g3">
-<div><h3 class="serif">AANU Jewellers</h3><p>Hallmarked gold, sterling silver and bespoke ornaments in Thorrur, Warangal.</p></div>
-<div><h3 class="serif">Visit us</h3><p>Kantayapalem Road, Thorrur, Warangal, Telangana 506163<br><a href="tel:+916300556301" style="color:#E6C57A">+91 63005 56301</a><br><a href="mailto:sriramojunikhil66@gmail.com">sriramojunikhil66@gmail.com</a></p>
-<p><a class="btn o" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=AANU+Jewellers+Kantayapalem+Road+Thorrur">Open in Google Maps</a></p></div>
+<div><h3 class="serif">AANU Jewellers</h3><p>Hallmarked gold, sterling silver and bespoke ornaments in Thorrur, Mahabubabad district, Telangana.</p></div>
+<div><h3 class="serif">Visit us</h3><p id="adr">HMJ6+WJQ, Thorrur, Telangana 506163</p><p style="margin-top:-6px"><a href="tel:+916300556301" style="color:#E6C57A">+91 63005 56301</a><br><a href="mailto:sriramojunikhil66@gmail.com">sriramojunikhil66@gmail.com</a></p>
+<p><a class="btn o" target="_blank" rel="noopener" id="mapb" href="https://www.google.com/maps/search/?api=1&query=17.582343,79.661595">Open in Google Maps</a> <a class="btn gb" target="_blank" rel="noopener" id="dirb" href="https://www.google.com/maps/dir/?api=1&destination=17.582343,79.661595">Get directions</a></p><iframe id="mapf" title="AANU Jewellers location on Google Maps" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:210px;border:0;border-radius:14px;margin-top:8px" src="https://maps.google.com/maps?q=17.582343,79.661595&z=17&output=embed"></iframe></div>
 <div><h3 class="serif">Prices</h3><p>Estimates from the store rate shown. The final bill is confirmed by the store.</p></div></div>
 <div style="border-top:1px solid rgba(255,255,255,.1);padding-top:14px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><span>&copy; 2026 AANU Jewellers</span><span style="color:#E6C57A">Website by Nikhil Chary Sriramoju</span></div></div></footer>
 

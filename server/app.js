@@ -9,7 +9,8 @@ const DEF = { gold24: 14359, gold22: 13675, gold20: 12538, gold18: 11401, silver
 const SCHEMA = `create table if not exists products(id serial primary key,name text not null,type text not null,tags text not null,karat int default 0,gold_g numeric default 0,silver_g numeric default 0,sizes text default 'Free',style text default 'Traditional',img text default '',model text default '',in_stock boolean default true);
 create table if not exists orders(id serial primary key,ref text unique not null,name text,phone text,items jsonb not null,rates jsonb not null,total int not null,status text default 'new',created_at timestamptz default now());
 create table if not exists custom_requests(id serial primary key,name text,phone text,metal text,whom text,details text,created_at timestamptz default now());
-create table if not exists settings(key text primary key,value jsonb not null);`;
+create table if not exists settings(key text primary key,value jsonb not null);
+alter table products add column if not exists extra jsonb default '{}';`;
 let ready; const init = () => ready || (ready = pool.query(SCHEMA));
 const wrap = f => async (q, s) => { try { if (!pool) return s.status(503).json({ error: "DATABASE_URL not set" }); await init(); await f(q, s); } catch (e) { console.error(e); ready = null; s.status(500).json({ error: "server error" }); } };
 const getSet = async (k, d) => { const r = await pool.query("select value from settings where key=$1", [k]); return r.rows[0] ? r.rows[0].value : d; };
@@ -29,23 +30,27 @@ const pub = R => { const { ts, ...r } = R; return r; };
 app.get("/api/rates", wrap(async (q, s) => { s.set("Cache-Control", "public, max-age=30"); s.json(pub(await rates())); }));
 app.get("/api/cron/rates", wrap(async (q, s) => { if (!E.CRON_SECRET || q.query.key !== E.CRON_SECRET) return s.sendStatus(401); s.json(pub(await rates(true))); }));
 // ---- catalogue
-const row = p => [p.name, p.type, p.tags, p.karat, +p.gold_g, +p.silver_g, p.sizes, p.style, p.img, p.model, p.id];
+const row = p => [p.name, p.type, p.tags, p.karat, +p.gold_g, +p.silver_g, p.sizes, p.style, p.img, p.model, p.id, p.extra || {}];
 app.get("/api/products", wrap(async (q, s) => { s.set("Cache-Control", "public, max-age=60"); s.json((await pool.query("select * from products where in_stock order by id")).rows.map(row)); }));
 // ---- orders: priced on the server at the moment of ordering (rate lock)
 app.post("/api/orders", limit(10), wrap(async (q, s) => {
   const b = q.body || {}, name = str(b.name, 60), phone = String(b.phone || "").replace(/\D/g, "").slice(-10), items = (Array.isArray(b.items) ? b.items : []).slice(0, 40);
   if (!name || phone.length !== 10 || !items.length) return s.status(400).json({ error: "Name, 10-digit phone and items are required" });
   const R = await rates(), pr = (await pool.query("select * from products where id=any($1) and in_stock", [items.map(i => parseInt(i.id) || 0)])).rows; let total = 0; const lines = [];
-  for (const i of items) { const p = pr.find(x => x.id === parseInt(i.id)); if (!p) continue; const qty = Math.min(10, Math.max(1, parseInt(i.qty) || 1)), unit = price(R, p); total += unit * qty; lines.push({ id: p.id, name: p.name, size: str(i.size, 20), qty, unit, grams: +p.gold_g + +p.silver_g }); }
+  for (const i of items) { const p = pr.find(x => x.id === parseInt(i.id)); if (!p) continue; const qty = Math.min(10, Math.max(1, parseInt(i.qty) || 1)), unit = price(R, p); if (!unit) continue; total += unit * qty; lines.push({ id: p.id, name: p.name, size: str(i.size, 20), qty, unit, grams: +p.gold_g + +p.silver_g }); }
   if (!lines.length) return s.status(400).json({ error: "Items not available" });
   const ref = "AANU-" + new Date().toISOString().slice(2, 10).replace(/-/g, "") + "-" + crypto.randomBytes(2).toString("hex").toUpperCase(), placedAt = ist(), snap = { ...pub(R), placedAt };
   await pool.query("insert into orders(ref,name,phone,items,rates,total) values($1,$2,$3,$4,$5,$6)", [ref, name, phone, JSON.stringify(lines), JSON.stringify(snap), total]);
   s.json({ ref, total, lines, placedAt, rates: snap }); }));
+app.get("/api/order-status", limit(10), wrap(async (q, s) => { const ref = str(q.query.ref, 40), ph = String(q.query.phone || "").replace(/\D/g, "").slice(-10);
+  const r = (await pool.query("select status,total,created_at from orders where ref=$1 and phone=$2", [ref, ph])).rows[0]; if (!r) return s.status(404).json({ error: "No order found for that reference and phone" }); s.json(r); }));
+app.post("/api/similar", limit(6), async (q, s) => { try { if (!E.ML_URL) return s.status(503).json({ error: "Visual search is not enabled" }); if (+q.headers["content-length"] > 6e6) return s.status(413).json({ error: "Image too large" });
+  const r = await fetch(E.ML_URL + "/search", { method: "POST", headers: { "content-type": q.headers["content-type"] }, body: q, duplex: "half", signal: AbortSignal.timeout(30000) }); s.status(r.status).json(await r.json()); } catch (e) { s.status(502).json({ error: "Visual search unavailable" }); } });
 app.post("/api/custom", limit(5), wrap(async (q, s) => { const b = q.body || {}; if (!str(b.details, 1000)) return s.status(400).json({ error: "details required" });
   await pool.query("insert into custom_requests(name,phone,metal,whom,details) values($1,$2,$3,$4,$5)", [str(b.name, 60), str(b.phone, 15), str(b.metal, 40), str(b.whom, 40), str(b.details, 1000)]); s.json({ ok: 1 }); }));
 // ---- AI assistant proxy: the Groq key stays on the server
 app.post("/api/groq", limit(20), async (q, s) => { try { if (!E.GROQ_API_KEY) return s.status(503).json({ error: "no key" }); const b = q.body || {};
-  const body = { model: E.GROQ_MODEL || "llama-3.3-70b-versatile", temperature: 0.3, max_tokens: 400, messages: (Array.isArray(b.messages) ? b.messages : []).slice(-16) }; if (Array.isArray(b.tools)) { body.tools = b.tools.slice(0, 5); body.tool_choice = "auto"; }
+  const body = { model: E.GROQ_MODEL || "llama-3.3-70b-versatile", temperature: 0.3, max_tokens: 400, messages: (Array.isArray(b.messages) ? b.messages : []).slice(-16) }; if (Array.isArray(b.tools)) { body.tools = b.tools.slice(0, 8); body.tool_choice = "auto"; }
   const r = await fetch("https://api.groq.com/openai/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + E.GROQ_API_KEY }, body: JSON.stringify(body), signal: AbortSignal.timeout(25000) }); s.status(r.status).json(await r.json()); } catch (e) { s.status(502).json({ error: "upstream" }); } });
 // ---- admin
 const SEC = E.SESSION_SECRET || "change-me", sign = p => p + "." + crypto.createHmac("sha256", SEC).update(p).digest("hex");
@@ -60,7 +65,10 @@ app.get("/api/admin/products", ...A(async (q, s) => s.json((await pool.query("se
 app.patch("/api/admin/products/:id", ...A(async (q, s) => { await pool.query("update products set in_stock=$1 where id=$2", [!!q.body.in_stock, parseInt(q.params.id)]); s.json({ ok: 1 }); }));
 app.delete("/api/admin/products/:id", ...A(async (q, s) => { await pool.query("delete from products where id=$1", [parseInt(q.params.id)]); s.json({ ok: 1 }); }));
 app.post("/api/admin/products/bulk", ...A(async (q, s) => { const rows = Array.isArray(q.body.rows) ? q.body.rows : []; if (q.body.replace) await pool.query("truncate products restart identity");
-  for (const r of rows) await pool.query("insert into products(name,type,tags,karat,gold_g,silver_g,sizes,style,img,model) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)", [str(r[0], 120), str(r[1], 20), str(r[2], 100), +r[3] || 0, +r[4] || 0, +r[5] || 0, str(r[6], 120) || "Free", str(r[7], 30) || "Traditional", str(r[8], 200), str(r[9], 200)]); s.json({ added: rows.length }); }));
+  for (let i = 0; i < rows.length; i += 100) { const ch = rows.slice(i, i + 100), ps = [], vals = []; ch.forEach((r, j) => { ps.push("(" + Array.from({ length: 11 }, (_, k) => "$" + (j * 11 + k + 1)).join(",") + ")");
+      vals.push(str(r[0], 120), str(r[1], 20), str(r[2], 100), +r[3] || 0, +r[4] || 0, +r[5] || 0, str(r[6], 120) || "Free", str(r[7], 30) || "Traditional", str(r[8], 200), str(r[9], 200), JSON.stringify(r[11] && typeof r[11] === "object" ? r[11] : {})); });
+    await pool.query("insert into products(name,type,tags,karat,gold_g,silver_g,sizes,style,img,model,extra) values" + ps.join(","), vals); }
+  s.json({ added: rows.length }); }));
 app.put("/api/admin/rates", ...A(async (q, s) => { const b = q.body || {}, R = { ...DEF, ...(await getSet("rates", {})) }; for (const k of ["gold24", "gold22", "gold20", "gold18", "silver", "makingGold", "makingSilver", "gst"]) if (b[k] != null && +b[k] > 0) R[k] = +b[k];
   R.mode = b.mode === "auto" ? "auto" : "manual"; R.updated = ist(); R.ts = Date.now(); await setSet("rates", R); s.json(pub(R)); }));
 app.post("/api/admin/calibrate", ...A(async (q, s) => { const { g, s: sv } = await raw(); await setSet("calib", { g: +q.body.gold24 / g, s: +q.body.silver / sv }); s.json({ ok: 1 }); }));
