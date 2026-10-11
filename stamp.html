@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>AANU stamp maker</title>
+<style>body{font:14px system-ui,sans-serif;margin:0;background:#f4efe6;color:#1a1a1a}main{max-width:760px;margin:auto;padding:16px}h1{font-family:Georgia,serif;color:#8a6a2b}.g{display:grid;gap:10px;grid-template-columns:1fr 1fr}label{font-size:12px;display:block;color:#555}input,select,button{width:100%;padding:9px;border-radius:8px;border:1px solid #bba;font:inherit;box-sizing:border-box}button{background:#c5a059;border:0;font-weight:700;cursor:pointer}#pv{background:#fff;border:1px solid #ccc;border-radius:12px;padding:14px;text-align:center;margin:14px 0}#pv svg{max-width:340px;width:100%;height:auto}textarea{width:100%;height:90px;font:12px monospace}</style></head><body><main>
+<h1>AANU stamp maker</h1><p>Edit the text to match the stamp on your bills, then download and use it on bills or paste the settings into <code>config.js</code>.</p>
+<div class="g"><div><label>Shop name</label><input id="name" value=""></div><div><label>Tagline</label><input id="tag"></div><div><label>Town</label><input id="town"></div><div><label>Second line (district, state)</label><input id="line2"></div><div><label>Phone</label><input id="phone"></div><div><label>GSTIN (optional)</label><input id="gstin"></div>
+<div><label>Shape</label><select id="shape"><option value="round">Round seal</option><option value="rect">Rectangle</option></select></div><div><label>Ink colour</label><select id="color"><option value="#1d3b8b">Blue</option><option value="#4b2a85">Violet</option><option value="#b3261e">Red</option><option value="#111111">Black</option><option value="#8a6a2b">Gold</option></select></div>
+<div><label>Tilt (degrees)</label><input id="tilt" type="number" value="-6"></div><div><label>Ink texture</label><select id="ink"><option value="1">Rubber stamp look</option><option value="0">Clean</option></select></div></div>
+<div id="pv"></div><div class="g"><button id="ds">Download SVG</button><button id="dp">Download PNG (transparent)</button></div>
+<p><label>Paste into config.js to use this stamp on bills</label><textarea id="cfg" readonly></textarea></p></main>
+<script src="config.js"></script><script src="settings.js"></script><script src="stamp.js"></script><script>
+var $=function(i){return document.getElementById(i)},F=["name","tag","town","line2","phone","gstin","shape","color","tilt","ink"],S=Object.assign({},AANU_STAMP.defaults,CFG.stamp||{});
+F.forEach(function(k){$(k).value=S[k]==null?"":S[k];$(k).oninput=$(k).onchange=draw});
+function cur(){var o={};F.forEach(function(k){o[k]=$(k).value});o.tilt=+o.tilt||0;o.ink=+o.ink;return o}
+function draw(){var o=cur();$("pv").innerHTML=AANU_STAMP.svg(o);$("cfg").value="CFG.stamp="+JSON.stringify(o)+";"}
+function dl(b,n){var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click()}
+$("ds").onclick=function(){dl(new Blob([AANU_STAMP.svg(cur())],{type:"image/svg+xml"}),"aanu-stamp.svg")};
+$("dp").onclick=function(){var o=cur(),s=AANU_STAMP.svg(Object.assign(o,{size:1200})),im=new Image();im.onload=function(){var c=document.createElement("canvas"),r=o.shape==="rect"?.5:1;c.width=1200;c.height=1200*r;c.getContext("2d").drawImage(im,0,0,c.width,c.height);c.toBlob(function(b){dl(b,"aanu-stamp.png")})};im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s)};
+draw();
+</script></body></html>

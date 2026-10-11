@@ -8,3 +8,6 @@ CFG.api=""; /* "" = same server. If the site is on another host than the API, pu
 CFG.store={hours:"",delivery:"",returns:"",exchange:"",payments:"",gstin:""}; /* fill in what applies to your shop; the assistant answers from these. Empty = it tells customers to confirm on WhatsApp */
 CFG.place={name:"AANU Jewellers",street:"",landmark:"",plus:"HMJ6+WJQ",town:"Thorrur",district:"Mahabubabad",state:"Telangana",pin:"506163",lat:17.582343,lng:79.661595};
 /* street = shop/door number and road (add it here); landmark e.g. "Near ..."; coordinates are the exact Google Maps pin */
+CFG.stamp={name:"AANU JEWELLERS",tag:"GOLD & SILVER",town:"THORRUR",line2:"MAHABUBABAD DT. TELANGANA",phone:"63005 56301",gstin:"",color:"#1d3b8b",shape:"round",tilt:-6,ink:1}; /* make yours at /stamp.html and paste the generated line here */
+CFG.store.email="sriramojunikhil66@gmail.com"; CFG.store.about="";
+CFG.social={instagram:"",facebook:"",youtube:"",googleReviews:""}; /* full profile links; only filled ones are shown in the footer */
